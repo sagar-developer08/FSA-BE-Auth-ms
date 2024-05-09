@@ -18,6 +18,7 @@ const credentials = new AWS.Credentials({
   secretAccessKey: AWS.config.credentials.secretAccessKey,
 });
 
+
 AWS.config.credentials = credentials;
 
 AWS.config.update({ region: 'ap-south-1' });
