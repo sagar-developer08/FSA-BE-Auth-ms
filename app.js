@@ -33,6 +33,12 @@ const pollMessages = async () => {
   }
 };
 
+app.get('/',(req,res)=>{
+  res.status(200).json({
+    message:"server responding"
+  })
+})
+
 app.use('/api/auth', authRoutes);
 // Sync database models with MySQL
 sequelize.sync()
@@ -47,3 +53,11 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+// 
+const awsServerlessExpress = require('aws-serverless-express');
+const server = awsServerlessExpress.createServer(app)
+
+module.exports.handler = (event, context) => awsServerlessExpress.proxy(server, event, context);
+
+// 
