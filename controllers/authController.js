@@ -13,7 +13,6 @@ exports.registerUser = async (req, res) => {
 
 
 // 
-
 const credentials = new AWS.Credentials({
   accessKeyId: AWS.config.credentials.accessKeyId,
   secretAccessKey: AWS.config.credentials.secretAccessKey,
