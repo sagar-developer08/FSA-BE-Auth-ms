@@ -1,2 +1,3 @@
 /config/awsConfig.js
 /node_modules
+.env

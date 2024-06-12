@@ -32,12 +32,12 @@ exports.loginUser = async (req, res) => {
     const token = await authService.loginUser(req.body);
     console.log(token,'token')
     // Send message to SQS queue
-    const params = {
-      MessageBody: JSON.stringify({ token }),
-      QueueUrl: 'https://sqs.ap-south-1.amazonaws.com/992382671249/fsa',
-    };
-    console.log(params,'param')
-    await sqs.sendMessage(params).promise();
+    // const params = {
+    //   MessageBody: JSON.stringify({ token }),
+    //   QueueUrl: 'https://sqs.ap-south-1.amazonaws.com/992382671249/fsa',
+    // };
+    // console.log(params,'param')
+    // await sqs.sendMessage(params).promise();
 
     res.status(200).json({ token });
 
