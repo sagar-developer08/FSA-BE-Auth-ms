@@ -37,3 +37,16 @@ exports.loginUser = async (req, res) => {
     res.status(401).json({ error: error.message });
   }
 };
+
+
+exports.logoutUser = async (req, res) => {
+
+  console.log(req.params)
+  try {
+    const data = await authService.logoutUser(req.params.userId, req.params.sessionId);
+
+    res.status(200).json({ message:"user logout sucessfully ", data});
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
