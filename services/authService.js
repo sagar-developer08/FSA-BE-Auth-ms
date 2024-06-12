@@ -1,9 +1,9 @@
 const bcrypt = require('bcryptjs');
 const JWT = require('jsonwebtoken');
-const jwtConfig = require('../config/jwtConfig');
+const jwtConfig = require('../config/config');
 const User = require('../models/userModel');
-const redisClient = require('../middleware/redis');
-const crypto = require("crypto")
+const { createSession, getSessionByUserId } = require('../middleware/sessionManager');
+
 exports.registerUser = async (userData) => {
   try {
     const existingUser = await User.findOne({ where: { email: userData.email } });
@@ -33,17 +33,18 @@ exports.loginUser = async (loginData) => {
       throw new Error('Invalid email or password');
     }
 
-    const token = JWT.sign({ userId: user.id, email: user.email }, jwtConfig.secretKey, { expiresIn: jwtConfig.expiresIn });
-
-    // Ensure the Redis client is connected before setting the token
-    if (!redisClient.isOpen) {
-      await redisClient.connect();
+    // Check if there's an active session
+    const existingSession = await getSessionByUserId(user.id);
+    if (existingSession) {
+      return { message: 'Session already exists', userId: user.id, sessionId: existingSession.sessionId };
     }
 
-    const sessionId = crypto.randomBytes(32).toString('hex');
-    await redisClient.set(sessionId, JSON.stringify({ token, userId: user.id }));
+    // No active session found, create a new session
+    const token = JWT.sign({ userId: user.id, email: user.email }, jwtConfig.secretKey, { expiresIn: jwtConfig.expiresIn });
 
-    return { userId: user.id, token };
+    const sessionId = await createSession(user.id, token, user.email);
+
+    return { userId: user.id, token, sessionId };
   } catch (error) {
     throw new Error(error.message);
   }
