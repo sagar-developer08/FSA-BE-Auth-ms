@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const JWT = require('jsonwebtoken');
 const jwtConfig = require('../config/config');
 const User = require('../models/userModel');
-const { createSession, getSessionByUserId } = require('../middleware/sessionManager');
+const { createSession, getSessionByUserId,createEncryptedSession, getDecryptedSessionByUserId } = require('../middleware/sessionManager');
 
 exports.registerUser = async (userData) => {
   try {
@@ -34,17 +34,18 @@ exports.loginUser = async (loginData) => {
     }
 
     // Check if there's an active session
-    const existingSession = await getSessionByUserId(user.id);
+    const existingSession = await getDecryptedSessionByUserId(user.id);
     if (existingSession) {
-      return { message: 'Session already exists', userId: user.id, sessionId: existingSession.sessionId };
+      return { message: 'Session already exists', userId: user.id, sessionId: existingSession.decryptedSessionId };
     }
 
     // No active session found, create a new session
     const token = JWT.sign({ userId: user.id, email: user.email }, jwtConfig.secretKey, { expiresIn: jwtConfig.expiresIn });
 
-    const sessionId = await createSession(user.id, token, user.email);
+    // const sessionId = await createSession(user.id, token, user.email);
+    const encryptedSessionId = await createEncryptedSession(user.id, token, user.email);
 
-    return { userId: user.id, token, sessionId };
+    return {  sessionId:encryptedSessionId };
   } catch (error) {
     throw new Error(error.message);
   }
