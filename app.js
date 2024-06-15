@@ -10,9 +10,6 @@ app.use(express.json());
 app.use(cors())
 // const { createSession, deleteSession, getSessionByUserId } = require('./sessionManager');
 
-
-
-
 app.get('/',(req,res)=>{
   res.status(200).json({
     message:"server responding"
