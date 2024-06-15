@@ -4,6 +4,7 @@ const jwtConfig = require('../config/config');
 const User = require('../models/userModel');
 const { createEncryptedSession, getDecryptedSessionByUserId, deleteSession } = require('../middleware/sessionManager');
 const { decrypt } = require('../middleware/encrypt');
+const config = require('../config/config');
 
 exports.registerUser = async (userData) => {
   try {
@@ -24,12 +25,16 @@ exports.registerUser = async (userData) => {
 
 exports.loginUser = async (loginData) => {
   try {
-    const user = await User.findOne({ where: { email: loginData.email } });
+
+    const decryptedEmail = decrypt(encryptedLoginData.email,config.secretKey ); // Use your actual key
+    const decryptedPassword = decrypt(encryptedLoginData.password,config.secretKey ); // Use your actual key
+
+    const user = await User.findOne({ where: { email: decryptedEmail } });
     if (!user) {
       throw new Error('Invalid email or password');
     }
 
-    const isPasswordValid = await bcrypt.compare(loginData.password, user.password);
+    const isPasswordValid = await bcrypt.compare(decryptedPassword, user.password);
     if (!isPasswordValid) {
       throw new Error('Invalid email or password');
     }
