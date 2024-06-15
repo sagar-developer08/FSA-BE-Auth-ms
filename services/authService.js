@@ -24,10 +24,11 @@ exports.registerUser = async (userData) => {
 };
 
 exports.loginUser = async (loginData) => {
+  console.log(loginData,'sa')
   try {
 
-    const decryptedEmail = decrypt(encryptedLoginData.email,config.secretKey ); // Use your actual key
-    const decryptedPassword = decrypt(encryptedLoginData.password,config.secretKey ); // Use your actual key
+    const decryptedEmail = decrypt(loginData.email,config.secretKey ); // Use your actual key
+    const decryptedPassword = decrypt(loginData.password,config.secretKey ); // Use your actual key
 
     const user = await User.findOne({ where: { email: decryptedEmail } });
     if (!user) {
