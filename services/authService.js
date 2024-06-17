@@ -24,7 +24,7 @@ exports.registerUser = async (userData) => {
 };
 
 exports.loginUser = async (loginData) => {
-  console.log(loginData,'sa')
+  // console.log(loginData,'sa')
   try {
 
     const decryptedEmail = decrypt(loginData.email,config.secretKey ); // Use your actual key
