@@ -44,7 +44,7 @@ exports.logoutUser = async (req, res) => {
 
   console.log(req.params)
   try {
-    const data = await authService.logoutUser(req.params.userId, req.params.sessionId);
+    const data = await authService.logoutUser( req.params.sessionId);
 
     res.status(200).json({ message:"user logout sucessfully ", data});
   } catch (error) {

@@ -95,13 +95,13 @@ exports.loginUser = async (loginData) => {
 //   }
 // };
 
-exports.logoutUser = async (userId, sessionId) => {
+exports.logoutUser = async ( sessionId) => {
   try {
     // Decode the session ID
-    const decodedSessionId = decodeURIComponent(sessionId);
-    // Decrypt the session ID
-    const decryptedSessionId = decrypt(decodedSessionId, jwtConfig.secretKey);
-    await deleteSession(decryptedSessionId);
+    // const decodedSessionId = decodeURIComponent(sessionId);
+    // // Decrypt the session ID
+    // const decryptedSessionId = decrypt(decodedSessionId, jwtConfig.secretKey);
+    await deleteSession(sessionId);
 
     return { message: 'Logout successful' };
   } catch (error) {
