@@ -73,6 +73,7 @@
 const redisClient = require('./redis');
 const { encrypt, decrypt } = require('./encrypt');
 const jwtConfig = require('../config/config');
+const config = require('../config/config');
 
 const SESSION_EXPIRY_SECONDS = 3600; // 1 hour
 
@@ -104,7 +105,9 @@ const deleteSession = async (sessionId) => {
 };
 
 const getSessionByUserId = async (userId) => {
+  console.log(userId, "userId")
   const keys = await redisClient.keys('*');
+  console.log(keys,'keys')
   for (const key of keys) {
     const sessionData = await redisClient.hGetAll(key);
     if (sessionData && sessionData.userId === userId.toString()) {
@@ -115,8 +118,11 @@ const getSessionByUserId = async (userId) => {
 };
 
 const createEncryptedSession = async (userId, token, email) => {
+  console.log(userId,token, email,"encrypt")
   const sessionId = await createSession(userId, token, email);
-  const encryptedSessionId = encrypt(sessionId); // Encrypt session ID
+  console.log(sessionId,'sessionid')
+  const encryptedSessionId = encrypt(sessionId,config.jwt.secretKey); // Encrypt session ID
+  console.log(encryptedSessionId,'encryptedSessionId')
   return encryptedSessionId;
 };
 

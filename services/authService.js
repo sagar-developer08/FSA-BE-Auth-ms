@@ -24,12 +24,14 @@ exports.registerUser = async (userData) => {
 };
 
 exports.loginUser = async (loginData) => {
-  // console.log(loginData,'sa')
   try {
+    if (!loginData.email || !loginData.password) {
+      throw new Error('Email and password are required');
+    }
 
-    const decryptedEmail = decrypt(loginData.email,config.secretKey ); // Use your actual key
-    const decryptedPassword = decrypt(loginData.password,config.secretKey ); // Use your actual key
-
+    const decryptedEmail = decrypt(loginData.email, config.jwt.secretKey);
+    const decryptedPassword = decrypt(loginData.password, config.jwt.secretKey);
+    
     const user = await User.findOne({ where: { email: decryptedEmail } });
     if (!user) {
       throw new Error('Invalid email or password');
@@ -40,16 +42,12 @@ exports.loginUser = async (loginData) => {
       throw new Error('Invalid email or password');
     }
 
-    // Check if there's an active session
     const existingSession = await getDecryptedSessionByUserId(user.id);
-    console.log(existingSession, 's');
     if (existingSession) {
-      console.log('User ID:', user.id); // Log userId if session exists
-      return { message: 'Session already exists',existingSession };
+      return { message: 'Session already exists', existingSession };
     }
 
-    // No active session found, create a new session
-    const token = JWT.sign({ userId: user.id, email: user.email }, jwtConfig.secretKey, { expiresIn: jwtConfig.expiresIn });
+    const token = JWT.sign({ userId: user.id, email: user.email }, jwtConfig.jwt.secretKey, { expiresIn: jwtConfig.jwt.expiresIn });
 
     const encryptedSessionId = await createEncryptedSession(user.id, token, user.email);
 
@@ -58,6 +56,44 @@ exports.loginUser = async (loginData) => {
     throw new Error(error.message);
   }
 };
+
+
+// exports.loginUser = async (loginData) => {
+//   // console.log(loginData,'sa')
+//   try {
+
+//     const decryptedEmail = decrypt(loginData.email,config.jwt.secretKey ); // Use your actual key
+//     const decryptedPassword = decrypt(loginData.password,config.jwt.secretKey ); // Use your actual key
+//     console.log(decryptedEmail,decryptedPassword,'sagar')
+//     const user = await User.findOne({ where: { email: decryptedEmail } });
+//     if (!user) {
+//       throw new Error('Invalid email or password');
+//     }
+
+//     const isPasswordValid = await bcrypt.compare(decryptedPassword, user.password);
+//     console.log(isPasswordValid,'isPasswordValid')
+//     if (!isPasswordValid) {
+//       throw new Error('Invalid email or password');
+//     }
+//     // Check if there's an active session
+//     const existingSession = await getDecryptedSessionByUserId(user.id);
+//     console.log(existingSession,existingSession)
+//     console.log(existingSession, 'existingSession');
+//     if (existingSession) {
+//       console.log('User ID:', user.id); // Log userId if session exists
+//       return { message: 'Session already exists',existingSession };
+//     }
+
+//     // No active session found, create a new session
+//     const token = JWT.sign({ userId: user.id, email: user.email }, jwtConfig.jwt.secretKey, { expiresIn: jwtConfig.jwt.expiresIn });
+
+//     const encryptedSessionId = await createEncryptedSession(user.id, token, user.email);
+
+//     return { sessionId: encryptedSessionId };
+//   } catch (error) {
+//     throw new Error(error.message);
+//   }
+// };
 
 exports.logoutUser = async (userId, sessionId) => {
   try {

@@ -23,7 +23,7 @@ module.exports = {
     }
   },
   jwt: {
-    secretKey: 'yourJwtSecretKey', // Replace with your JWT secret key
+    secretKey: 'XXXYTHSRATAV', // Replace with your JWT secret key
     expiresIn: '1h'
   }
 };

@@ -29,6 +29,7 @@ exports.registerUser = async (req, res) => {
 // 
 exports.loginUser = async (req, res) => {
   try {
+    console.log(req.body)
     const data = await authService.loginUser(req.body);
 
     res.status(200).json({ data });
