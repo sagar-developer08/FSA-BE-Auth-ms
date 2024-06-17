@@ -129,7 +129,7 @@ const createEncryptedSession = async (userId, token, email) => {
 const getDecryptedSessionByUserId = async (userId) => {
   const encryptedSession = await getSessionByUserId(userId);
   if (encryptedSession) {
-    const decryptedSessionId = decrypt(encryptedSession.sessionId.token); // Decrypt session ID
+    const decryptedSessionId = decrypt(encryptedSession.sessionId.token,jwtConfig.jwt.secretKey); // Decrypt session ID
     return { decryptedSessionId, sessionData: encryptedSession.sessionId };
   }
   return null;
